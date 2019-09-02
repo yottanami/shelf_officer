@@ -1,79 +1,71 @@
-import React, { useState } from "react";
-import { useMutation } from '@apollo/react-hooks';
+import React, { Component } from "react";
+import { Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
 
 
 const MUT = gql`
 mutation createCategory($input: CreateCategoryInput!){
           createCategory(input: $input) {
-category{ parentId }
+category{ id, title }
           }}
 `;
 
-export default function CreateCategory(props) {
-  const [values, setValues] = useState({title: '', body: '', image: '', parentId: 1});
-  const [createCategory, { data }] = useMutation(MUT);
+class CreateCategory extends Component {
+  constructor(props) {
+    super(props);
 
-  const handleSubmit = (evt) => {
-    evt.preventDefault();
-    createCategory({ variables: {
-      input: {
-        title: values.title,
-        body: values.body,
-        parentId: 1,
-        image: values.image
-      }
-    }
-                   });
-  };
+    this.titleRef = React.createRef();
+    this.bodyRef = React.createRef();
+    this.imageFileRef = React.createRef();
+  }
 
+  render() {
+    return (
+      <div>
+        <Mutation mutation={MUT}>
+          {(createCategory) => (
+            <div>
+              <form
+                onSubmit={e => {
+                  e.preventDefault();
 
-  const handleFileChange = (event) => {
-    event.persist();
-//    let file = event.target.files[0];
-    let image = event.target.files[0];
-    let form = new FormData();
-    form.append('image', image);
-    //setValues(inputs => ({...inputs, image: file}));
-    setValues({...values, image: form});
-  };
+                  const variables = {
+                    body: this.bodyRef.current.value,
+                    title: this.titleRef.current.value,
+                    image: this.imageFileRef.current.files[0],
+                    parentId: 1
+                  };
+                  createCategory({ variables: {
+                    input: {
+                      title: this.titleRef.current.value,
+                      image: this.imageFileRef.current.files[0],
+                      body: this.bodyRef.current.value,
+                      parentId: 1
+                    }
 
-  const handleInputChange = (event) => {
-    event.persist();
-    setValues(inputs => ({...inputs, [event.target.name]: event.target.value}));
-  };
+                  } }).then(({ data: { createCategory } }) => {
+                    this.titleRef.current.value = '';
+                    this.bodyRef.current.value = '';
+                    this.imageFileRef.current.value = null;
 
-  return (
-    <form onSubmit={handleSubmit} >
-      <label>
-        Title:
-        <input
-          type="text"
-          value={values.title}
-          name="title"
-          onChange={handleInputChange}
-        />
-      </label>
-      <label>
-        Body:
-        <input
-          type="text"
-          value={values.body}
-          name="body"
-          onChange={handleInputChange}
-        />
-      </label>
+                  });
+                }}
+              >
+                <input type="text" name="title" ref={this.titleRef} />
+                <input type="text" name="body" ref={this.bodyRef} />
+                <input type="file" name="imageFile" ref={this.imageFileRef} />
 
-      <label>
-        Image:
-        <input
-          type="file"
-          value={values.image}
-          name="image"
-          onChange={handleFileChange}
-        />
-      </label>
-      <input type="submit" value="Submit" />
-    </form>
-  );
+                <button type="submit">Create Category</button>
+              </form>
+
+              <div>
+              </div>
+            </div>
+          )}
+        </Mutation>
+      </div>
+    );
+  }
 }
+
+export default CreateCategory;
