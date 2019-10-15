@@ -1,14 +1,16 @@
 import React from "react";
 import { Mutation } from "react-apollo";
 import gql from 'graphql-tag';
+//import useCategoriesQuery from './useCategoriesQuery';
 
 const GET_CATS = gql`
-{
+  query Categories {
     categories {
-        id
-        name
+      title,
+      image,
+id
     }
-}
+  }
 `;
 
 const DELETE_CATS = gql`
@@ -24,11 +26,12 @@ const DestroyCategory = ({id}) => {
     <Mutation
       mutation={DELETE_CATS}
       update={(cache, { data: { destroyCategory } }) => {
-        const { allCats } = cache.readQuery({ query: GET_CATS });
+        const {categories} = cache.readQuery({ query: GET_CATS });
         cache.writeQuery({
           query: GET_CATS,
-          data: { categories: allCats.filter(e => e.id !== id)}
+          data: { categories: categories.filter(e => e.id !== id)}
         });
+
       }}
     >
       {(destroyCategory, { data }) => (
