@@ -8,6 +8,8 @@
     "apollo-link-context": "^1.0.18",
     "apollo-link-http": "^1.5.15",
     "apollo-upload-client": "^11.0.0",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.15.1",
     "graphql": "^14.4.2",
     "graphql-tag": "^2.10.1",
     "react": "^16.9.0",
