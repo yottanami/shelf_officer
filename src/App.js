@@ -8,7 +8,6 @@ import EditCateogry from './pages/categories/EditCategory';
 import Posts from './pages/posts/Posts';
 import CreatePost from './pages/posts/CreatePost';
 import EditPost from './pages/posts/EditPost';
-import {Auth, Login} from './pages/auth/Login';
 import RequestOTP from './pages/auth/RequestOTP';
 import ConfirmOTP from './pages/auth/ConfirmOTP';
 import cookie from 'react-cookies';
