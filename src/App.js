@@ -8,7 +8,10 @@ import EditCateogry from './pages/categories/EditCategory';
 import Posts from './pages/posts/Posts';
 import CreatePost from './pages/posts/CreatePost';
 import EditPost from './pages/posts/EditPost';
-import {fakeAuth, Login} from './pages/auth/Login';
+import {Auth, Login} from './pages/auth/Login';
+import RequestOTP from './pages/auth/RequestOTP';
+import ConfirmOTP from './pages/auth/ConfirmOTP';
+import cookie from 'react-cookies';
 
 import {
   BrowserRouter,
@@ -24,33 +27,22 @@ import {
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route {...rest} render={(props)=>(
-    fakeAuth.isAuthenticated === true
-    ? <Component {...props}/>
+    typeof cookie.load('userToken') !== 'undefined'
+      ? <Component {...props}/>
     : <Redirect to={{
-      pathname: '/login',
+      pathname: '/login/request',
       state: { from: props.location }
     }}/>
   )}/>
-)
-
-const AuthButton = withRouter(({ history }) => (
-  fakeAuth.isAuthenticated === true
-  ? <p>
-    Welcome! <button onClick={()=> {
-      fakeAuth.signout(()=> history.push('/'))
-    }}>Sign Out</button>
-  </p>
-  : <p>You are not logged in.</p>
-))
+);
 
 const App = () => (
   <ApolloProvider client={apolloClient}>
     <BrowserRouter>
       <div>
         <Nav/>
-        <AuthButton />
         <PrivateRoute exact path='/' component={Categories} />
-        <PrivateRoute path='/categories' component={Categories} />
+        <PrivateRoute exact path='/categories' component={Categories} />
         <PrivateRoute path='/categories/:id/edit' component={EditCateogry} />
         <PrivateRoute path='/categories/add' component={CreateCategory} />
 
@@ -58,7 +50,8 @@ const App = () => (
         <PrivateRoute path='/posts/:categoryId/edit/:id' component={EditPost} />
         <PrivateRoute path='/posts/:categoryId/add' component={CreatePost} />
 
-        <Route path='/login' component={Login} />
+        <Route path='/login/confirm' component={ConfirmOTP} />
+        <Route path='/login/request' component={RequestOTP} />
 
       </div>
     </BrowserRouter>
